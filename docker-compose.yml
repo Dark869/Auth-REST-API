@@ -1,0 +1,20 @@
+services:
+  db:
+    image: postgres:18.3-alpine3.23
+    restart: always
+    volumes:
+      - ./data:/var/lib/postgresql
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 123456789
+      POSTGRES_DB: auth-api
+    ports:
+      - 5432:5432
+
+  adminer:
+    depends_on:
+      - db
+    image: adminer
+    restart: always
+    ports:
+      - 9090:8080
