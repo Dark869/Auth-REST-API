@@ -36,10 +36,10 @@ public class User implements UserDetails {
     private Role role;
 
     @Column(name = "is_enabled", nullable = false)
-    private boolean isEnabled;
+    private boolean enabled;
 
     @Column(name = "is_locked", nullable = false)
-    private boolean isLocked;
+    private boolean locked;
 
     @Column(name = "failed_attempts", nullable = false)
     private int failedAttempts;
@@ -71,7 +71,7 @@ public class User implements UserDetails {
 
     @Override
     public boolean isAccountNonLocked() {
-        return !isLocked;
+        return !locked;
     }
 
     @Override
@@ -81,7 +81,7 @@ public class User implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return isEnabled;
+        return enabled;
     }
 
 }
