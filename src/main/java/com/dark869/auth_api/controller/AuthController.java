@@ -1,18 +1,25 @@
 package com.dark869.auth_api.controller;
 
+import com.dark869.auth_api.dto.LoginRequest;
+import com.dark869.auth_api.dto.LoginResponse;
+import com.dark869.auth_api.dto.RefreshRequest;
+import com.dark869.auth_api.dto.RefreshResponse;
 import com.dark869.auth_api.dto.RegisterRequest;
 import com.dark869.auth_api.dto.RegisterResponse;
 import com.dark869.auth_api.service.AuthService;
 
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.RequestMapping;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;
 
+@Tag(name = "Authentication", description = "Endpoints for user authentication")
 @RestController
-@RequestMapping("/api/v1/auth")
+@RequestMapping("/api/${api.version}/auth")
 public class AuthController {
 
     private final AuthService authService;
@@ -21,9 +28,33 @@ public class AuthController {
         this.authService = authService;
     }
 
+    @Operation(summary = "Register a new user", description = "Creates a new user account. Email must be unique.")
+    @ApiResponse(responseCode = "201", description = "User registered successfully")
+    @ApiResponse(responseCode = "400", description = "Invalid input data")
+    @ApiResponse(responseCode = "409", description = "Email already in use")
     @PostMapping("/register")
     public ResponseEntity<RegisterResponse> register(@Valid @RequestBody RegisterRequest request) {
         RegisterResponse response = authService.register(request);
         return new ResponseEntity<RegisterResponse>(response, HttpStatus.CREATED);
+    }
+
+    @Operation(summary = "User login", description = "Authenticates a user and returns access and refresh tokens.")
+    @ApiResponse(responseCode = "200", description = "Login successful")
+    @ApiResponse(responseCode = "400", description = "Invalid input data")
+    @ApiResponse(responseCode = "401", description = "Invalid credentials")
+    @PostMapping("/login")
+    public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest request) {
+        LoginResponse response = authService.login(request);
+        return new ResponseEntity<LoginResponse>(response, HttpStatus.OK);
+    }
+
+    @Operation(summary = "Refresh access token", description = "Generates a new access token using a valid refresh token.")
+    @ApiResponse(responseCode = "200", description = "Token refreshed successfully")
+    @ApiResponse(responseCode = "400", description = "Invalid input data")
+    @ApiResponse(responseCode = "401", description = "Invalid or revoked refresh token")
+    @PostMapping("/refresh")
+    public ResponseEntity<RefreshResponse> refresh(@Valid @RequestBody RefreshRequest request) {
+        RefreshResponse response = authService.refresh(request);
+        return new ResponseEntity<RefreshResponse>(response, HttpStatus.OK);
     }
 }
