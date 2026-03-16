@@ -11,10 +11,17 @@ services:
     ports:
       - 5432:5432
 
-  adminer:
+  api:
+    image: auth_api:latest
+    restart: always
     depends_on:
       - db
-    image: adminer
-    restart: always
     ports:
-      - 9090:8080
+      - 8080:8080   
+
+    # variables only for development, should be set as env vars in production 
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/auth-api #${DB_URL}
+      SPRING_DATASOURCE_USERNAME: postgres #${DB_USERNAME}
+      SPRING_DATASOURCE_PASSWORD: 123456789 #${DB_PASSWORD}
+      JWT_SECRET: dev-secret-key-change-this-in-production-min-256-bits #${JWT_SECRET}
