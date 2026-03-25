@@ -2,6 +2,8 @@ package com.dark869.auth_api.service;
 
 import com.dark869.auth_api.dto.LoginRequest;
 import com.dark869.auth_api.dto.LoginResponse;
+import com.dark869.auth_api.dto.LogoutRequest;
+import com.dark869.auth_api.dto.LogoutResponse;
 import com.dark869.auth_api.dto.RefreshRequest;
 import com.dark869.auth_api.dto.RefreshResponse;
 import com.dark869.auth_api.dto.RegisterRequest;
@@ -97,4 +99,16 @@ public class AuthService {
 
         return new RefreshResponse(newAccessToken);
     }
+
+    public LogoutResponse logout(LogoutRequest request) {
+        String hashedToken = HashUtil.sha256(request.refreshToken());
+        RefreshToken tokenEntity = refreshTokenRepository.findByTokenHash(hashedToken)
+                .orElseThrow(() -> new InvalidTokenException("Invalid refresh token"));
+
+        tokenEntity.setRevoked(true);
+        refreshTokenRepository.save(tokenEntity);
+
+        return new LogoutResponse("Logged out successfully");
+    }
+
 }

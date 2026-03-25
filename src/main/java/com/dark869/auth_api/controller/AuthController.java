@@ -2,6 +2,8 @@ package com.dark869.auth_api.controller;
 
 import com.dark869.auth_api.dto.LoginRequest;
 import com.dark869.auth_api.dto.LoginResponse;
+import com.dark869.auth_api.dto.LogoutRequest;
+import com.dark869.auth_api.dto.LogoutResponse;
 import com.dark869.auth_api.dto.RefreshRequest;
 import com.dark869.auth_api.dto.RefreshResponse;
 import com.dark869.auth_api.dto.RegisterRequest;
@@ -56,5 +58,15 @@ public class AuthController {
     public ResponseEntity<RefreshResponse> refresh(@Valid @RequestBody RefreshRequest request) {
         RefreshResponse response = authService.refresh(request);
         return new ResponseEntity<RefreshResponse>(response, HttpStatus.OK);
+    }
+
+    @Operation(summary = "User logout", description = "Revokes the provided refresh token, effectively logging the user out.")
+    @ApiResponse(responseCode = "200", description = "Logged out successfully")
+    @ApiResponse(responseCode = "400", description = "Invalid input data")
+    @ApiResponse(responseCode = "401", description = "Invalid or revoked refresh token")
+    @PostMapping("/logout")
+    public ResponseEntity<LogoutResponse> logout(@Valid @RequestBody LogoutRequest request) {
+        LogoutResponse response = authService.logout(request);
+        return new ResponseEntity<LogoutResponse>(response, HttpStatus.OK);
     }
 }
