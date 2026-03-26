@@ -11,6 +11,11 @@ import org.springframework.web.bind.annotation.RestController;
 import com.dark869.auth_api.dto.UserResponse;
 import com.dark869.auth_api.service.UserService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
+@Tag(name = "User", description = "Endpoints for user information")
 @RestController
 @RequestMapping("/api/${api.version}/users")
 public class UserController {
@@ -20,6 +25,9 @@ public class UserController {
         this.userService = userService;
     }
 
+    @Operation(summary = "Get current user info", description = "Returns information about the currently authenticated user.")
+    @ApiResponse(responseCode = "200", description = "User information retrieved successfully")
+    @ApiResponse(responseCode = "401", description = "Unauthorized - user not authenticated")
     @GetMapping("/me")
     public ResponseEntity<UserResponse> getMe(@AuthenticationPrincipal UserDetails userDetails) {
         UserResponse response = userService.getUserInfo(userDetails);
