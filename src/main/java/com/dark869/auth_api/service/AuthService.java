@@ -20,6 +20,7 @@ import com.dark869.auth_api.utils.HashUtil;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -109,6 +110,15 @@ public class AuthService {
         refreshTokenRepository.save(tokenEntity);
 
         return new LogoutResponse("Logged out successfully");
+    }
+
+    public LogoutResponse logoutAll(UserDetails userDetails) {
+        User user = userRepository.findByEmail(userDetails.getUsername())
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+        refreshTokenRepository.revokeAllByUser(user);
+
+        return new LogoutResponse("Logged out from all sessions successfully");
     }
 
 }

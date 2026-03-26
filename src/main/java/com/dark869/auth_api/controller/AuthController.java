@@ -16,6 +16,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;
 
@@ -67,6 +70,16 @@ public class AuthController {
     @PostMapping("/logout")
     public ResponseEntity<LogoutResponse> logout(@Valid @RequestBody LogoutRequest request) {
         LogoutResponse response = authService.logout(request);
+        return new ResponseEntity<LogoutResponse>(response, HttpStatus.OK);
+    }
+
+    @Operation(summary = "Logout from all sessions", description = "Revokes all refresh tokens for the authenticated user, logging them out from all devices.")
+    @ApiResponse(responseCode = "200", description = "Logged out from all sessions successfully")
+    @ApiResponse(responseCode = "401", description = "Unauthorized")
+    @Transactional
+    @PostMapping("/logoutAll")
+    public ResponseEntity<LogoutResponse> logoutAll(@AuthenticationPrincipal UserDetails userDetails) {
+        LogoutResponse response = authService.logoutAll(userDetails);
         return new ResponseEntity<LogoutResponse>(response, HttpStatus.OK);
     }
 }
