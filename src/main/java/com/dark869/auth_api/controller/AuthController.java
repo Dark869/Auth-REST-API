@@ -77,7 +77,7 @@ public class AuthController {
     @ApiResponse(responseCode = "200", description = "Logged out from all sessions successfully")
     @ApiResponse(responseCode = "401", description = "Unauthorized")
     @Transactional
-    @PostMapping("/logoutAll")
+    @PostMapping("/logout_all")
     public ResponseEntity<LogoutResponse> logoutAll(@AuthenticationPrincipal UserDetails userDetails) {
         LogoutResponse response = authService.logoutAll(userDetails);
         return new ResponseEntity<LogoutResponse>(response, HttpStatus.OK);
