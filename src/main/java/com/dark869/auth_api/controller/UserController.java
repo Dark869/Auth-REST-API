@@ -5,7 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -44,7 +44,7 @@ public class UserController {
     @ApiResponse(responseCode = "400", description = "Bad Request - invalid input or current password incorrect")
     @ApiResponse(responseCode = "401", description = "Unauthorized - user not authenticated")
     @ApiResponse(responseCode = "403", description = "Forbidden - user account is locked or disabled")
-    @PostMapping("/change_password")
+    @PatchMapping("/change_password")
     public ResponseEntity<UserChangePasswordResponse> changePassword(@AuthenticationPrincipal UserDetails userDetails,
             @Valid @RequestBody UserChangePasswordRequest request) {
         UserChangePasswordResponse response = userService.changePassword(userDetails, request);

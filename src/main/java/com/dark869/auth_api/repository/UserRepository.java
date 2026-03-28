@@ -1,6 +1,9 @@
 package com.dark869.auth_api.repository;
 
 import com.dark869.auth_api.model.User;
+
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
@@ -11,4 +14,5 @@ public interface UserRepository extends JpaRepository<User, UUID> {
 
     boolean existsByEmail(String email);
 
+    Page<User> findAll(Pageable pageable);
 }
