@@ -1,5 +1,7 @@
 package com.dark869.auth_api.service;
 
+import java.util.UUID;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -7,6 +9,8 @@ import org.springframework.stereotype.Service;
 
 import com.dark869.auth_api.repository.UserRepository;
 import com.dark869.auth_api.dto.AdminAllUsersResponse;
+import com.dark869.auth_api.dto.AdminUserUnlockResponse;
+import com.dark869.auth_api.model.User;
 
 @Service
 public class AdminService {
@@ -28,5 +32,15 @@ public class AdminService {
                         user.isLocked(),
                         user.getFailedAttempts(),
                         user.getCreatedAt()));
+    }
+
+    public AdminUserUnlockResponse unlockUser(UUID userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        user.setLocked(false);
+        user.setFailedAttempts(0);
+        user.setLockTime(null);
+        userRepository.save(user);
+        return new AdminUserUnlockResponse("User unlocked successfully");
     }
 }

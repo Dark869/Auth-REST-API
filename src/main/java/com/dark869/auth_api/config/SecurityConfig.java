@@ -31,6 +31,10 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
+                // CSRF disabled intentionally: API uses stateless JWT authentication via
+                // Authorization header,
+                // not session cookies. CSRF attacks require cookie-based auth to be
+                // exploitable.
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
