@@ -24,3 +24,10 @@ services:
   #     SPRING_DATASOURCE_USERNAME: ${DB_USERNAME}
   #     SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
   #     JWT_SECRET: ${JWT_SECRET}
+
+  mailhog:
+    image: mailhog/mailhog
+    restart: always
+    ports:
+      - "1025:1025"
+      - "8025:8025"

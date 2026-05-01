@@ -4,6 +4,15 @@ spring:
     username: ${DB_USER:postgres}
     password: ${DB_PASSWORD:123456789}
     driver-class-name: ${DB_DRIVER:org.postgresql.Driver}
+  mail:
+    host: localhost
+    port: 1025
+    properties:
+      mail:
+        smtp:
+          auth: false
+          starttls:
+            enable: false
 
   #This configuration is only for development
   security:
@@ -24,7 +33,12 @@ spring:
     locations: classpath:db/migration
 
 server:
+  url: ${URL:http:/localhost}
   port: ${PORT:8080}
+
+app:
+  mail:
+    from: ${MAIL_FROM:no-reply@auth-api.local}
 
 api:
   version: ${API_VERSION:v1}

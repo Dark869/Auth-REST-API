@@ -4,6 +4,7 @@ import java.util.UUID;
 
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.dark869.auth_api.dto.AdminAllUsersResponse;
+import com.dark869.auth_api.dto.AdminUserDeleteResponse;
 import com.dark869.auth_api.dto.AdminUserUnlockResponse;
 import com.dark869.auth_api.service.AdminService;
 
@@ -47,5 +49,14 @@ public class AdminController {
     @PatchMapping("/users/{userId}/unlock")
     public ResponseEntity<AdminUserUnlockResponse> unlockUser(@PathVariable UUID userId) {
         return ResponseEntity.ok(adminService.unlockUser(userId));
+    }
+
+    @Operation(summary = "Delete user", description = "Deletes a user account")
+    @ApiResponse(responseCode = "200", description = "User deleted successfully")
+    @ApiResponse(responseCode = "404", description = "User not found")
+    @ApiResponse(responseCode = "403", description = "Access denied")
+    @DeleteMapping("/users/{userId}/delete")
+    public ResponseEntity<AdminUserDeleteResponse> deleteUser(@PathVariable UUID userId) {
+        return ResponseEntity.ok(adminService.deleteUser(userId));
     }
 }
