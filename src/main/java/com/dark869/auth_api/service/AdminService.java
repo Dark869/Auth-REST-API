@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import com.dark869.auth_api.repository.UserRepository;
 import com.dark869.auth_api.dto.AdminAllUsersResponse;
+import com.dark869.auth_api.dto.AdminUserDeleteResponse;
 import com.dark869.auth_api.dto.AdminUserUnlockResponse;
 import com.dark869.auth_api.model.User;
 
@@ -42,5 +43,12 @@ public class AdminService {
         user.setLockTime(null);
         userRepository.save(user);
         return new AdminUserUnlockResponse("User unlocked successfully");
+    }
+
+    public AdminUserDeleteResponse deleteUser(UUID userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        userRepository.delete(user);
+        return new AdminUserDeleteResponse("User deleted successfully");
     }
 }

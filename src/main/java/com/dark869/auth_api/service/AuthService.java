@@ -16,6 +16,7 @@ import com.dark869.auth_api.repository.UserRepository;
 import com.dark869.auth_api.repository.RefreshTokenRepository;
 import com.dark869.auth_api.security.JwtService;
 import com.dark869.auth_api.utils.HashUtil;
+import com.dark869.auth_api.utils.INotification;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -30,13 +31,15 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final RefreshTokenRepository refreshTokenRepository;
+    private final INotification notificationService;
 
     public AuthService(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtService jwtService,
-            RefreshTokenRepository refreshTokenRepository) {
+            RefreshTokenRepository refreshTokenRepository, INotification notificationService) {
         this.passwordEncoder = passwordEncoder;
         this.userRepository = userRepository;
         this.jwtService = jwtService;
         this.refreshTokenRepository = refreshTokenRepository;
+        this.notificationService = notificationService;
     }
 
     public RegisterResponse register(RegisterRequest request) {
@@ -52,16 +55,21 @@ public class AuthService {
                 .failedAttempts(0)
                 .createdAt(LocalDateTime.now())
                 .build();
-        userRepository.save(user);
+        User savedUser = userRepository.save(user);
+        notificationService.sendNotification(savedUser.getEmail(), "Email verification", savedUser.getId());
         return new RegisterResponse(
                 LocalDateTime.now(),
                 201,
-                "User registered successfully");
+                "User registered successfully, please check your email to verify your account.");
     }
 
     public LoginResponse login(LoginRequest request) {
         User user = userRepository.findByEmail(request.email())
                 .orElseThrow(() -> new IllegalArgumentException("Invalid email or password"));
+
+        if (!user.isEnabled()) {
+            throw new IllegalArgumentException("Email not verified. Please check your inbox.");
+        }
 
         if (!passwordEncoder.matches(request.password(), user.getPasswordHash())) {
             throw new IllegalArgumentException("Invalid email or password");
