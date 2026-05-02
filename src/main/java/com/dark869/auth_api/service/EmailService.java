@@ -1,6 +1,5 @@
 package com.dark869.auth_api.service;
 
-import java.time.LocalDateTime;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -48,7 +47,6 @@ public class EmailService implements INotification {
                 .token(token.toString())
                 .user(user)
                 .used(false)
-                .expiresAt(LocalDateTime.now().plusMinutes(15))
                 .build();
 
         emailVerificationTokenRepository.save(verificationToken);
@@ -58,7 +56,7 @@ public class EmailService implements INotification {
         message.setSubject(subject);
         message.setText("Please verify your email to complete registration. \nYour verification code is: "
                 + token.toString()
-                + "\nThis code will expire in 15 minutes. \n Send your verification code to "
+                + "\n Send your verification code to "
                 + serverUrl
                 + "/api/auth/verify-email endpoint to verify your email.");
         try {
@@ -68,11 +66,14 @@ public class EmailService implements INotification {
         }
     }
 
-    // public ValidateEmailResponse validateEmail(UUID token) {
-    // EmailVerificationToken verificationToken =
-    // emailVerificationTokenRepository.findByToken(token.toString())
-    // .orElseThrow(() -> new IllegalArgumentException("Invalid verification
-    // token"));
-
-    // }
+    public ValidateEmailResponse validateEmail(UUID token) {
+        EmailVerificationToken verificationToken = emailVerificationTokenRepository.findByToken(token.toString())
+                .orElseThrow(() -> new IllegalArgumentException("Invalid verification token"));
+        User user = verificationToken.getUser();
+        user.setEnabled(true);
+        userRepository.save(user);
+        verificationToken.setUsed(true);
+        return new ValidateEmailResponse(
+                "Email verified successfully");
+    }
 }

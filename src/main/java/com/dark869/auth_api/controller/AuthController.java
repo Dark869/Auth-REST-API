@@ -8,11 +8,15 @@ import com.dark869.auth_api.dto.RefreshRequest;
 import com.dark869.auth_api.dto.RefreshResponse;
 import com.dark869.auth_api.dto.RegisterRequest;
 import com.dark869.auth_api.dto.RegisterResponse;
+import com.dark869.auth_api.dto.ValidateEmailResponse;
 import com.dark869.auth_api.service.AuthService;
+import com.dark869.auth_api.service.EmailService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+
+import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,9 +32,11 @@ import jakarta.validation.Valid;
 public class AuthController {
 
     private final AuthService authService;
+    private final EmailService emailService;
 
-    public AuthController(AuthService authService) {
+    public AuthController(AuthService authService, EmailService emailService) {
         this.authService = authService;
+        this.emailService = emailService;
     }
 
     @Operation(summary = "Register a new user", description = "Creates a new user account. Email must be unique.")
@@ -81,5 +87,15 @@ public class AuthController {
     public ResponseEntity<LogoutResponse> logoutAll(@AuthenticationPrincipal UserDetails userDetails) {
         LogoutResponse response = authService.logoutAll(userDetails);
         return new ResponseEntity<LogoutResponse>(response, HttpStatus.OK);
+    }
+
+    @Operation(summary = "Validate email", description = "Validates the user's email address.")
+    @ApiResponse(responseCode = "200", description = "Email validated successfully")
+    @ApiResponse(responseCode = "400", description = "Invalid input data")
+    @ApiResponse(responseCode = "401", description = "Invalid or revoked refresh token")
+    @GetMapping("/validate-email")
+    public ResponseEntity<ValidateEmailResponse> validateEmail(@RequestParam UUID token) {
+        ValidateEmailResponse response = emailService.validateEmail(token);
+        return new ResponseEntity<ValidateEmailResponse>(response, HttpStatus.OK);
     }
 }
